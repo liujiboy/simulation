@@ -1,16 +1,15 @@
 package cn.edu.cqu.model;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.Random;
 
 public class Simulation {
     private City city;
     private Human[] humans;
     private double p;
-    private long num=0;
+    //迭代次数
+    private long iteration =0;
+    private int infected;
+    private int uninfected;
     public City getCity() {
         return city;
     }
@@ -36,7 +35,8 @@ public class Simulation {
         }
         for(int i=0;i<(int)(humanSize*iRatio);i++)
             humans[i].infected=true;
-
+        infected=(int)(humanSize*iRatio);
+        uninfected=humanSize-infected;
     }
     public Simulation(int humanSize,double iRatio,double p)
     {
@@ -46,7 +46,7 @@ public class Simulation {
     }
     public void run()
     {
-        num++;
+        iteration++;
         for(int i=0;i<humans.length;i++)
         {
             humans[i].move();
@@ -67,15 +67,29 @@ public class Simulation {
                 }
             }
         }
-    }
-
-    public String getResult() {
-        int count=0;
+        infected=0;
         for(Human human:humans)
         {
             if(human.infected)
-                count++;
+                infected++;
         }
-        return "感染人数："+count+" 健康人数："+(humans.length-count)+" 迭代次数："+num;
+        uninfected=humans.length-infected;
+    }
+
+    public String getResult() {
+
+        return "感染人数："+infected+" 健康人数："+uninfected+" 迭代次数："+ iteration;
+    }
+
+    public long getIteration() {
+        return iteration;
+    }
+
+    public int getInfected() {
+        return infected;
+    }
+
+    public int getUninfected() {
+        return uninfected;
     }
 }

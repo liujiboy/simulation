@@ -1,6 +1,11 @@
 package view;
 
 import cn.edu.cqu.model.Simulation;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,27 +16,30 @@ public class SimulationFrame extends JFrame implements  Runnable{
     private Simulation simulation;
     private SimulationCanvas simulationCanvas;
     private JPanel eastPanel;
-    private JTextField humanSizeTextField;
-    private JTextField iRatioTextField;
-    private JTextField pTextField;
-    private JTextField speedField;
     private JLabel message;
     private Thread simulationThread;
     private JPanel southPanel;
+    private SimulationChartPanel simulationChartPanel;
+    private SimulationParameterPanel simulationParameterPanel;
     public SimulationFrame()
     {
         simulationCanvas=new SimulationCanvas();
+        simulationCanvas.setPreferredSize(new Dimension(1200,800));
+        simulationChartPanel=new SimulationChartPanel(0,300);
         initEastPanel();
         initSouthPanel();
         setLayout(new BorderLayout());
         add(simulationCanvas, BorderLayout.CENTER);
         add(eastPanel,BorderLayout.EAST);
         add(southPanel,BorderLayout.SOUTH);
-        setSize(1200,600);
+        add(simulationChartPanel,BorderLayout.NORTH);
+        //setSize(1200,600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        simulationThread=new Thread(this);
+
     }
+
+
 
     private void initSouthPanel() {
         southPanel=new JPanel();
@@ -41,35 +49,22 @@ public class SimulationFrame extends JFrame implements  Runnable{
 
     private void initEastPanel() {
         eastPanel=new JPanel();
-        eastPanel.setLayout(new GridLayout(5,2));
-        //eastPanel.setLayout(new FlowLayout());
-        JLabel humanSizeLabel=new JLabel("人口：");
-        humanSizeTextField=new JTextField(10);
-        JLabel iRatioLabel=new JLabel("感染比例：");
-        iRatioTextField=new JTextField(10);
-        JLabel pLabel=new JLabel("传染率：");
-        pTextField=new JTextField(10);
-        JLabel speedLabel=new JLabel("速度（ms）：");
-        speedField=new JTextField(10);
-        eastPanel.add(humanSizeLabel);
-        eastPanel.add(humanSizeTextField);
-        eastPanel.add(iRatioLabel);
-        eastPanel.add(iRatioTextField);
-        eastPanel.add(pLabel);
-        eastPanel.add(pTextField);
-        eastPanel.add(speedLabel);
-        eastPanel.add(speedField);
+        eastPanel.setLayout(new GridLayout(2,1));
+        eastPanel.setPreferredSize(new Dimension(200,0));
+        simulationParameterPanel=new SimulationParameterPanel();
+        eastPanel.add(simulationParameterPanel);
         JButton startBt=new JButton("开始模拟");
         eastPanel.add(startBt);
         startBt.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 stopSimulationThread();
-                int humanSize=Integer.parseInt(humanSizeTextField.getText());
-                double iRatio=Double.parseDouble(iRatioTextField.getText());
-                double p=Double.parseDouble(pTextField.getText());
+                int humanSize=simulationParameterPanel.getHumanSize();
+                double iRatio=simulationParameterPanel.getIRatio();
+                double p=simulationParameterPanel.getP();
                 simulation=new Simulation(humanSize,iRatio,p);
                 simulationCanvas.setSimulation(simulation);
+                simulationChartPanel.clear();
                 startSimulationThread();
             }
         });
@@ -84,7 +79,8 @@ public class SimulationFrame extends JFrame implements  Runnable{
     private void stopSimulationThread() {
         running=false;
         try {
-            simulationThread.join();
+            if(simulationThread!=null)
+                simulationThread.join();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
@@ -93,6 +89,7 @@ public class SimulationFrame extends JFrame implements  Runnable{
     public static void main(String[] args)
     {
         SimulationFrame frame=new SimulationFrame();
+        frame.pack();
         frame.setVisible(true);
     }
     private boolean running=false;
@@ -101,10 +98,12 @@ public class SimulationFrame extends JFrame implements  Runnable{
         while(running)
         {
             try {
-                Thread.sleep(Integer.parseInt(speedField.getText()));
+                Thread.sleep(simulationParameterPanel.getSpeed());
                 simulation.run();
                 simulationCanvas.repaint();
                 message.setText(simulation.getResult());
+                simulationChartPanel.addUnInfected(simulation.getIteration(),simulation.getUninfected());
+                simulationChartPanel.addInfected(simulation.getIteration(),simulation.getInfected());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
