@@ -15,57 +15,31 @@ public class City {
     public int w;
     //地图高
     public int h;
+    //网格大小
+    public int cell;
+    //地图图像
+    private BufferedImage mapImage;
 
-    private Human[] humans;
-
-    private BufferedImage image;
-
-    public BufferedImage getImage() {
-        return image;
+    public BufferedImage getMap() {
+        return mapImage;
     }
 
-    public Human[] getHumans() {
-        return humans;
-    }
-
-    public City()
-    {
-        this(50);
-    }
-    public City(int humanSize){
+    public City(){
         initMap();
-        initHumans(humanSize);
         try {
-            image=ImageIO.read(this.getClass().getResourceAsStream("/map.png"));
+            mapImage=ImageIO.read(this.getClass().getResourceAsStream("/map.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void initHumans(int humanSize) {
-        humans=new Human[humanSize];
-        Random r=new Random();
-        for(int i=0;i<humans.length;i++)
-        {
-            int x,y;
-            while(true)
-            {
-                x=r.nextInt(w);
-                y=r.nextInt(h);
-                if(map[y][x]=='0')
-                    break;
-            }
-            humans[i] = new Human(x,y);
-        }
-        for(int i=0;i<(int)(humanSize*0.2);i++)
-            humans[i].infected=true;
 
-    }
 
     private void initMap() {
         Scanner s=new Scanner(this.getClass().getResourceAsStream("/map.txt"));
         w=Integer.parseInt(s.nextLine());
         h=Integer.parseInt(s.nextLine());
+        cell=Integer.parseInt(s.nextLine());
         map=new char[h][w];
         for(int row=0;row<h;row++) {
             String line=s.nextLine();

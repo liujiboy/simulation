@@ -8,10 +8,11 @@ public class Human {
     public int x;
     public int y;
     public boolean infected=false;
-
-    public Human(int x, int y) {
+    private City city;
+    public Human(int x, int y,City city) {
         this.x = x;
         this.y = y;
+        this.city=city;
     }
 
     public Human(int x, int y, boolean infected) {
@@ -20,7 +21,7 @@ public class Human {
         this.infected = infected;
     }
 
-    public void move(City city)
+    public void move()
     {
         Random r=new Random();
         switch (r.nextInt(4))
@@ -46,6 +47,16 @@ public class Human {
                 }
 
         }
+    }
+    public void draw(Graphics g)
+    {
+        if(infected) {
+            g.setColor(Color.RED);
+        }else{
+            g.setColor(Color.GREEN);
+        }
+        g.fillRect(x*city.cell,y*city.cell,city.cell,city.cell);
+
     }
 
 }
