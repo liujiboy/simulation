@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查看病毒传播</title>
+    <script src="jquery.js"></script>
+    <script>
+        $(document).ready(function(){
+            var num=0;
+            function change(){
+                num++;
+                $("#view").attr("src","simulation?op=view&num="+num);
+                setTimeout(change,1000);
+            }
+            change();
+        })
+
+    </script>
+</head>
+<body>
+<img id="view" src="" width="1200" height="800">
+</body>
+</html>

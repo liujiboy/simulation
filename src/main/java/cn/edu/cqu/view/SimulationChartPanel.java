@@ -1,4 +1,4 @@
-package view;
+package cn.edu.cqu.view;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;

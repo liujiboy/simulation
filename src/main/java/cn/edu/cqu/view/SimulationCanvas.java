@@ -1,4 +1,4 @@
-package view;
+package cn.edu.cqu.view;
 
 import cn.edu.cqu.model.Human;
 import cn.edu.cqu.model.Simulation;

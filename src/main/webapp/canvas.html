@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>病毒传播模拟</title>
+    <script src="jquery.js"></script>
+    <script>
+        $(document).ready(function(){
+            const canvas = document.getElementById("myCanvas");
+            const map = document.getElementById("map");
+            const graphics = canvas.getContext("2d");
+            function draw()
+            {
+                graphics.drawImage(map,0,0,1200,800);
+                $.getJSON("simulation?op=json",function(humans){
+                    let cell=10;
+                   for(i=0;i<humans.length;i++)
+                   {
+                       let human=humans[i];
+                       if(human.infected==true)
+                           graphics.fillStyle="#FF0000";
+                       else
+                           graphics.fillStyle="#00FF00";
+                       graphics.fillRect(human.x*cell,human.y*cell,cell,cell);
+                   }
+                   setTimeout(draw,1000);
+                });
+            }
+            draw();
+        })
+    </script>
+</head>
+<body>
+<img id="map" src="map.png" style="display: none;">
+<canvas id="myCanvas" width="1200" height="800" style="border:1px solid #c3c3c3;">
+
+</canvas>
+</body>
+</html>

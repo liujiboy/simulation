@@ -1,4 +1,4 @@
-package view;
+package cn.edu.cqu.view;
 
 import javax.swing.*;
 import java.awt.*;
